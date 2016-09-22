@@ -4,11 +4,21 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+
+//*************************************************************************************************
+//connection database
+mongoose.connect('mongodb://localhost/daxv01data', function(err){
+  if (err) {
+    console.log('Could not connect to mongo');
+  }
+});
+//*************************************************************************************************
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

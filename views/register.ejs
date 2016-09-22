@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <title><%=title%></title>
 </head>
 <body>
-<h1><%= title %></h1>
-<form action="register" method="POST">
-    <input type="text" name="username" placeholder="Enter your username"><br>
-    <input type="email" name="email" placeholder="Enter your email"><br>
-    <input type="password" name="password" placeholder="Enter your password"><br>
-    <input type="password" name="password2" placeholder="Confirm password"><br>
+
+<h1>Wellcome to <%=title%></h1>
+<hr>
+<!-- <% if (errors) %> -->
+<form action="/users/register" method="POST">
+    Username:<br>
+    <input type="text" name="username">
+    <br>
+    Email:<br>
+    <input type="email" name="email">
+    <br>
+    Password:<br>
+    <input type="password" name="password">
+    <br>
+    Confirm Password:<br>
+    <input type="password" name="password2">
+    <br><br>
     <input type="submit" value="Register">
 </form>
 </body>
