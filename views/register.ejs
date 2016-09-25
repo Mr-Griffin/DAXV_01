@@ -7,7 +7,9 @@
 
 <h1>Wellcome to <%=title%></h1>
 <hr>
-<!-- <% if (errors) %> -->
+<% if (message.length > 0) { %>
+    <div><%= message %></div>
+<% } %>
 <form action="/users/register" method="POST">
     Username:<br>
     <input type="text" name="username">

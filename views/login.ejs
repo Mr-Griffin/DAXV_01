@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%=title%></title>
+    <title><%= title %></title>
 </head>
 <body>
 
-<h1>Wellcome to <%=title%></h1>
+<h1>Wellcome to <%= title %></h1>
 <hr>
-<%= errors %>
+<% if (message) { %>
+    <div><%= message %></div>
+<% } %>
 <form action="/users/login" method="POST">
     Username:<br>
     <input type="text" name="username">

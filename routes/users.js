@@ -1,83 +1,52 @@
 var express = require('express');
-var	app = express();
-var	bodyParser = require('body-parser');
-var	expressValidator = require('express-validator');
-var User = require('../models/user');
+var router = express.Router();
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
-// using validator
-app.use(expressValidator());
+module.exports = function(passport){
 
-/**
- * path /users/login
- * method GET
- */
-app.get('/login', function(req, res) {
-    res.render('login', {title: 'Login', errors:''});
-});
+    //login requeset
+    router.post('/login', passport.authenticate('local-login',{
+        successRedirect: '/',
+        failureRedirect: '/users/login',
+        failureFlash : true // allow flash messages
+    }));
 
-/**
- * path /users/login
- * method POST
- */
-app.post('/login', function(req, res){
-    var username = req.body.username,
-        password = req.body.password;
+    //signup request
+    router.post('/register', passport.authenticate('local-register', {
+        successRedirect: '/',
+        failureRedirect: '/',
+        failureFlash : true // allow flash messages
+    }));
 
-    User.findOne({username: username, password: password}, function(err, user){
-        if(err) res.redirect('/users/register');
-        console.log(user);
-        if(user == null){
-            res.render('login', {title: 'Login Error', errors:'Username or Password wrong'});
-        }else{
-            res.redirect('/');
-        }
+    //logout request
+    router.get('/logout', function(req, res) {
+        req.logout();
+        res.redirect('/');
     });
-});
 
-/**
- * path /users/register
- * method GET
- */
-app.get('/register', function(req, res) {
-    res.render('register', {title: 'Register',  errors:'' });
-});
+    router.get('/login', function(req, res) {
+        res.render('login', {title: 'Login', success: false, message: req.flash('loginMessage')});
+    });
 
-/**
- * path /users/register
- * method POST
- */
-app.post('/register', function(req, res){
-    var username = req.body.username,
-        email = req.body.email,
-        password = req.body.password,
-        confirmPassword = req.body.password2;
+    router.get('/register', function(req, res) {
+        res.render('register', {title: 'Register',  success: false, message: req.flash('registerMessage')});
+    });
 
-    //check validation
-    req.checkBody("username", "Enter a valid username.").notEmpty();
-    req.checkBody("email", "Enter a valid email address.").isEmail();
-    req.checkBody("password", "Enter a valid password.").notEmpty();
-    // req.checkBody("password2", "Confirm Password not match.");
-
-    var errors = req.validationErrors();
-    if (errors) {
-        console.log(errors);
-        res.render('register', {title: 'Register', errors: errors });
-    }else{
-        var user = new User({
-            username: username,
-            password: password,
-            email: email
+    router.get('/profile', isLoggedIn, function(req, res) {
+        res.render('profile.ejs', {
+            user : req.user // get the user out of session and pass to template
         });
-        user.save(function(err){
-            if (err) throw err;
-            console.log('Register successfully');
-            res.redirect('/users/login')
-        });
-    }
-});
+    });
 
-module.exports = app;
+    return router;
+};
+
+// route middleware to make sure
+function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated())
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/');
+}
